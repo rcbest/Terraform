@@ -3,14 +3,22 @@ provider "aws" {
  }
 variable "tr_subnet_cidr_block" {
     description = "tr_subnet_cidr_block"
+    
  }
  variable "tr_vpc_cidr_block" {
     description = "tr_vpc_cidr_block"
+    default = "10.1.0.0/16"
+    type = string
+ }
+ variable "Name" {
+    description = "Resurs_name"
+    type = list(string)
+   
  }
 resource "aws_vpc" "tr_vpc" {
     cidr_block = var.tr_vpc_cidr_block
     tags = {
-      "Name" = "tr_vpc"
+      "Name" = var.Name[0]
       Owner = "Karlos"
     }
 } 
@@ -19,7 +27,7 @@ resource "aws_subnet" "tr_subnet" {
     cidr_block = var.tr_subnet_cidr_block
     availability_zone = "eu-central-1a"
     tags = {
-      "Name" = "tr-subnet"
+      "Name" = var.Name[1]
       "Owner" = "Karlos"
       description = "It`s my subnet"
       vpc-env = "prod"
