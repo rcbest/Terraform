@@ -1,16 +1,22 @@
 provider "aws" {
  region  = "eu-central-1"
  }
-resource "aws_vpc" "tr-vpc" {
-    cidr_block = "10.0.0.0/16"
+variable "tr_subnet_cidr_block" {
+    description = "tr_subnet_cidr_block"
+ }
+ variable "tr_vpc_cidr_block" {
+    description = "tr_vpc_cidr_block"
+ }
+resource "aws_vpc" "tr_vpc" {
+    cidr_block = var.tr_vpc_cidr_block
     tags = {
-      "Name" = "tr-vpc"
+      "Name" = "tr_vpc"
       Owner = "Karlos"
     }
 } 
-resource "aws_subnet" "tr-subnet" {
-    vpc_id = aws_vpc.tr-vpc.id
-    cidr_block = "10.0.10.0/24"
+resource "aws_subnet" "tr_subnet" {
+    vpc_id = aws_vpc.tr_vpc.id
+    cidr_block = var.tr_subnet_cidr_block
     availability_zone = "eu-central-1a"
     tags = {
       "Name" = "tr-subnet"
@@ -30,5 +36,24 @@ resource "aws_subnet" "tr-subnet-2" {
     tags = {
       Name = "My-default-subnet"
     }
+}
+output "tr-vpc-id" {
+    value = aws_vpc.tr_vpc.id
+ }
+
+output "tr-vpc-cidr-block" {
+    value = aws_vpc.tr_vpc.cidr_block
+ }
+
+output "tr-subnet-id" {
+    value = aws_subnet.tr_subnet.id
+ }
+
+output "tr-subnet-arn" {
+    value = aws_subnet.tr_subnet.arn
+}
+
+output "tr-subnet-cidr_block" {
+    value = aws_subnet.tr_subnet.cidr_block
 }
 
