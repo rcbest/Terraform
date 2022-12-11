@@ -1,6 +1,7 @@
 provider "aws" {
  region  = "eu-central-1"
  }
+ // ------------VAR---------------
 variable "tr_subnet_cidr_block" {
     description = "tr_subnet_cidr_block"
     default = "10.1.0.0/16"
@@ -21,7 +22,16 @@ variable "tr_subnet_cidr_block" {
 variable avail_zone {
     default = "eu-central-1c"
 }
+//--------------DATA--------------
 
+data "aws_vpc" "existing_vpc" {
+    default = true
+    }
+data "aws_key_pair" "AWS_key" {
+  key_name           = "AWS_key"
+  include_public_key = true
+}
+// ---------------RESOURS---------
 resource "aws_vpc" "tr_vpc" {
     cidr_block = var.tr_vpc_cidr_block
     tags = {
@@ -40,9 +50,6 @@ resource "aws_subnet" "tr_subnet" {
       vpc-env = "prod"
     }
 }
-data "aws_vpc" "existing_vpc" {
-    default = true
-    }
 
 resource "aws_subnet" "tr-subnet-2" {
     vpc_id = data.aws_vpc.existing_vpc.id
@@ -52,6 +59,9 @@ resource "aws_subnet" "tr-subnet-2" {
       Name = "My-default-subnet"
     }
 }
+
+//---------------OUTPUT--------
+
 output "tr-vpc-id" {
     value = aws_vpc.tr_vpc.id
  }
@@ -70,5 +80,16 @@ output "tr-subnet-arn" {
 
 output "tr-subnet-cidr_block" {
     value = aws_subnet.tr_subnet.cidr_block
+}
+output "key-fingerprint" {
+  value = data.aws_key_pair.AWS_key.fingerprint
+}
+
+output "name" {
+  value = data.aws_key_pair.AWS_key.key_name
+}
+
+output "id" {
+  value = data.aws_key_pair.AWS_key.id
 }
 
