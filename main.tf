@@ -1,95 +1,74 @@
 provider "aws" {
   region = "eu-central-1"
 }
-// ------------VAR---------------
-variable "tr_subnet_cidr_block" {
-  description = "tr_subnet_cidr_block"
-  default     = "10.1.0.0/16"
-  type        = string
 
-}
-variable "tr_vpc_cidr_block" {
-  description = "tr_vpc_cidr_block"
-  default     = "10.1.0.0/16"
-  type        = string
-}
-variable "Name" {
-  description = "Resurs_name"
-  type        = list(string)
+variable "vpc_cidr_block" {}
+variable "subnet_cidr_block" {}
+variable "avail_zone" {}
+variable "env_prefix" {}
 
-}
-#   export (set) TF_VAR_avail_zone="eu-central-1b"
-variable "avail_zone" {
-  default = "eu-central-1c"
-}
-//--------------DATA--------------
-
-data "aws_vpc" "existing_vpc" {
-  default = true
-}
-data "aws_key_pair" "AWS_key" {
-  key_name           = "AWS_key"
-  include_public_key = true
-}
-// ---------------RESOURS---------
-resource "aws_vpc" "tr_vpc" {
-  cidr_block = var.tr_vpc_cidr_block
+resource "aws_vpc" "myapp-vpc" {
+  cidr_block = var.vpc_cidr_block
   tags = {
-    "Name" = var.Name[0]
-    Owner  = "Karlos"
+    Name : "${var.env_prefix}-vpc"
   }
 }
-resource "aws_subnet" "tr_subnet" {
-  vpc_id            = aws_vpc.tr_vpc.id
-  cidr_block        = var.tr_subnet_cidr_block
+
+resource "aws_subnet" "myapp-subnet-1" {
+  vpc_id            = aws_vpc.myapp-vpc.id
+  cidr_block        = var.subnet_cidr_block
   availability_zone = var.avail_zone
   tags = {
-    "Name"      = var.Name[1]
-    "Owner"     = "Karlos"
-    description = "It`s my subnet"
-    vpc-env     = "prod"
+    Name : "${var.env_prefix}-subnet-1"
   }
 }
-
-resource "aws_subnet" "tr-subnet-2" {
-  vpc_id            = data.aws_vpc.existing_vpc.id
-  cidr_block        = "172.31.48.0/20"
-  availability_zone = "eu-central-1a"
+resource "aws_route_table" "myapp-route-table" {
+  vpc_id = aws_vpc.myapp-vpc.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.myapp-igw.id
+  }
   tags = {
-    Name = "My-default-subnet"
+    Name : "${var.env_prefix}-rtb"
+
   }
 }
 
-//---------------OUTPUT----------------
-
-output "tr-vpc-id" {
-  value = aws_vpc.tr_vpc.id
+resource "aws_internet_gateway" "myapp-igw" {
+  vpc_id = aws_vpc.myapp-vpc.id
+  tags = {
+    Name : "${var.env_prefix}-igw"
+  }
 }
 
-output "tr-vpc-cidr-block" {
-  value = aws_vpc.tr_vpc.cidr_block
-}
+resource "aws_route_table_association" "myapp-rta" {
+  subnet_id      = aws_subnet.myapp-subnet-1.id
+  route_table_id = aws_route_table.myapp-route-table.id
 
-output "tr-subnet-id" {
-  value = aws_subnet.tr_subnet.id
 }
+resource "aws_security_group" "myapp-sg" {
+  name   = "myapp-sg"
+  vpc_id = aws_vpc.myapp-vpc.id
 
-output "tr-subnet-arn" {
-  value = aws_subnet.tr_subnet.arn
-}
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    cidr_blocks     = ["0.0.0.0/0"]
+    prefix_list_ids = []
 
-output "tr-subnet-cidr_block" {
-  value = aws_subnet.tr_subnet.cidr_block
-}
-output "key-fingerprint" {
-  value = data.aws_key_pair.AWS_key.fingerprint
-}
+  }
 
-output "name" {
-  value = data.aws_key_pair.AWS_key.key_name
 }
-
-output "id" {
-  value = data.aws_key_pair.AWS_key.id
-}
-
