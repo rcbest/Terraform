@@ -13,8 +13,11 @@ variable "tr_subnet_cidr_block" {
  variable "Name" {
     description = "Resurs_name"
     type = list(string)
-   
- }
+
+  }
+  #   export (set) TF_VAR_avail_zone="eu-central-1b"
+variable avail_zone {}
+
 resource "aws_vpc" "tr_vpc" {
     cidr_block = var.tr_vpc_cidr_block
     tags = {
@@ -25,7 +28,7 @@ resource "aws_vpc" "tr_vpc" {
 resource "aws_subnet" "tr_subnet" {
     vpc_id = aws_vpc.tr_vpc.id
     cidr_block = var.tr_subnet_cidr_block
-    availability_zone = "eu-central-1a"
+    availability_zone = var.avail_zone
     tags = {
       "Name" = var.Name[1]
       "Owner" = "Karlos"
