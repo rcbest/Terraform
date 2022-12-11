@@ -3,6 +3,8 @@ provider "aws" {
  }
 variable "tr_subnet_cidr_block" {
     description = "tr_subnet_cidr_block"
+    default = "10.1.0.0/16"
+    type = string
     
  }
  variable "tr_vpc_cidr_block" {
@@ -16,7 +18,9 @@ variable "tr_subnet_cidr_block" {
 
   }
   #   export (set) TF_VAR_avail_zone="eu-central-1b"
-variable avail_zone {}
+variable avail_zone {
+    default = "eu-central-1c"
+}
 
 resource "aws_vpc" "tr_vpc" {
     cidr_block = var.tr_vpc_cidr_block
