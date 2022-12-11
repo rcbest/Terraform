@@ -70,5 +70,7 @@ resource "aws_security_group" "myapp-sg" {
     prefix_list_ids = []
 
   }
+  tags = {
+    Name : "${var.env_prefix}-sg"
 
 }
