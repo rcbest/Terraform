@@ -8,6 +8,7 @@ variable "avail_zone" {}
 variable "env_prefix" {}
 variable "instance_type" {}
 variable "public_key_location" {}
+#variable "privat_key_location" {}
 
 resource "aws_vpc" "myapp-vpc" {
   cidr_block = var.vpc_cidr_block
@@ -111,7 +112,32 @@ resource "aws_instance" "myapp-server" {
   availability_zone           = var.avail_zone
   associate_public_ip_address = true
   key_name                    = "AWS_key"
-  user_data                   = file("start.sh")
+  # user_data                   = file("start.sh")
+  /* connection {
+    type        = "ssh"
+    host        = self.public_ip
+    user        = "ec2-user"
+    private_key = file(var.privat_key_location)
+  }
+  provisioner "remote-exec" {
+    inline = ["export ENV=dev",
+      "mkdir newdir"
+    ]
+    script = file("start.sh")
+  }
+  provisioner "file" {
+    source      = "start.sh"
+    destination = "/home/ec2-user/start.sh"
+
+  }*/
+  provisioner "local-exec" {
+    command = "mkdir tost"
+
+  }
+  provisioner "local-exec" {
+    command = "echo huy vam > huy_vam.txt"
+
+  }
 
   tags = {
     Name = "${var.env_prefix}-server"
