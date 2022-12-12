@@ -111,6 +111,8 @@ resource "aws_instance" "myapp-server" {
   availability_zone           = var.avail_zone
   associate_public_ip_address = true
   key_name                    = "AWS_key"
+  user_data                   = file("start.sh")
+
   tags = {
     Name = "${var.env_prefix}-server"
   }
