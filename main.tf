@@ -7,6 +7,7 @@ variable "subnet_cidr_block" {}
 variable "avail_zone" {}
 variable "env_prefix" {}
 variable "instance_type" {}
+variable "public_key_location" {}
 
 resource "aws_vpc" "myapp-vpc" {
   cidr_block = var.vpc_cidr_block
@@ -93,8 +94,15 @@ data "aws_ami" "latest-amazon-linux-image" {
 }
 output "ami-name" {
   value = data.aws_ami.latest-amazon-linux-image.id
+}
+output "public-ip" {
+  value = aws_instance.myapp-server.public_ip
 
 }
+/*resource "aws_key_pair" "ssh-key" {
+  key_name   = "AWS_key"
+  public_key = file(var.public_key_location)
+}*/
 resource "aws_instance" "myapp-server" {
   ami                         = data.aws_ami.latest-amazon-linux-image.id
   instance_type               = var.instance_type
