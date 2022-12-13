@@ -129,7 +129,7 @@ resource "aws_instance" "myapp-server" {
     source      = "start.sh"
     destination = "/home/ec2-user/start.sh"
 
-  }*/
+  }
   provisioner "local-exec" {
     command = "mkdir tost"
 
@@ -137,7 +137,7 @@ resource "aws_instance" "myapp-server" {
   provisioner "local-exec" {
     command = "echo huy vam > huy_vam.txt"
 
-  }
+  }*/
 
   tags = {
     Name = "${var.env_prefix}-server"
