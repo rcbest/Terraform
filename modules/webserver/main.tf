@@ -1,6 +1,6 @@
 resource "aws_security_group" "myapp-sg" {
   name   = "myapp-sg"
-  vpc_id = aws_vpc.myapp-vpc.id
+  vpc_id = var.vpc_id
 
   ingress {
     from_port   = 22
@@ -34,7 +34,7 @@ data "aws_ami" "latest-amazon-linux-image" {
   owners      = ["137112412989"]
   filter {
     name   = "name"
-    values = ["amzn2-ami-kernel-*-x86_64-gp2"]
+    values = [var.image_name]
   }
   filter {
     name   = "virtualization-type"
@@ -50,7 +50,7 @@ data "aws_ami" "latest-amazon-linux-image" {
 resource "aws_instance" "myapp-server" {
   ami                         = data.aws_ami.latest-amazon-linux-image.id
   instance_type               = var.instance_type
-  subnet_id                   = module.myapp-subnet.subnet.id
+  subnet_id                   = var.subnet_id
   vpc_security_group_ids      = [aws_security_group.myapp-sg.id]
   availability_zone           = var.avail_zone
   associate_public_ip_address = true

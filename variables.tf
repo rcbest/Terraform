@@ -4,4 +4,4 @@ variable "avail_zone" {}
 variable "env_prefix" {}
 variable "instance_type" {}
 variable "public_key_location" {}
-#variable "privat_key_location" {}
+variable "image_name" {}
