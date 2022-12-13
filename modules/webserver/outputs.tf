@@ -1,4 +1,4 @@
-output "public-ip" {
+output "aws_instance" {
   value = aws_instance.myapp-server.public_ip
 }
 output "ami-name" {
