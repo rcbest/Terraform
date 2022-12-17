@@ -48,6 +48,7 @@ data "aws_ami" "latest-amazon-linux-image" {
   public_key = file(var.public_key_location)
 }*/
 resource "aws_instance" "myapp-server" {
+
   ami                         = data.aws_ami.latest-amazon-linux-image.id
   instance_type               = var.instance_type
   subnet_id                   = var.subnet_id
